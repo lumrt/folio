@@ -7,7 +7,7 @@ interface Props {
 }
 
 const {
-  title = "/folio — engineer · scientist · operator",
+  title = "0xLuZ — engineer · scientist · operator",
   description = "I turn product hypotheses into shipped software that compounds. Available for short missions and long-term remote roles.",
 } = Astro.props;
 ---
@@ -27,7 +27,9 @@ const {
     <meta property="og:title" content={title} />
     <meta property="og:description" content={description} />
 
-    <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
+    <link rel="icon" type="image/png" sizes="32x32" href="/favicon-32.png" />
+    <link rel="icon" type="image/png" sizes="192x192" href="/favicon-192.png" />
+    <link rel="apple-touch-icon" sizes="180x180" href="/apple-touch-icon.png" />
     <link rel="canonical" href={Astro.url.toString()} />
 
     <meta
