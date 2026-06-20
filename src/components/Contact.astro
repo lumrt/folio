@@ -1,0 +1,189 @@
+---
+import { site } from "../data/site";
+
+const items = [
+  { kind: "email", label: site.email, url: `mailto:${site.email}` },
+  { kind: "github", label: site.socials.github.label, url: site.socials.github.url },
+  {
+    kind: "linkedin",
+    label: site.socials.linkedin.label,
+    url: site.socials.linkedin.url,
+  },
+  { kind: "x", label: site.socials.x.label, url: site.socials.x.url },
+  {
+    kind: "book a call",
+    label: site.socials.calendar.label,
+    url: site.socials.calendar.url,
+  },
+];
+---
+
+<section id="contact" class="ct reveal">
+  <div class="container">
+    <div class="ct__card">
+      <span class="ct__badge" aria-hidden="true">
+        <span class="ct__badge-top">Hello, I'm</span>
+        <span class="ct__badge-name">{site.handle}</span>
+      </span>
+
+      <div class="ct__grid">
+        <div class="ct__left">
+          <span class="section-label">contact</span>
+          <h2 class="ct__title">
+            let's<br />
+            <span class="script ct__script">build something</span>.
+          </h2>
+          <p class="ct__lede">say hello.</p>
+        </div>
+
+        <ul class="ct__list">
+          {
+            items.map((it) => (
+              <li>
+                <a class="ct__row" href={it.url} rel="noopener" target={it.url.startsWith("mailto:") ? "_self" : "_blank"}>
+                  <span class="ct__kind">{it.kind}</span>
+                  <span class="ct__sep">·</span>
+                  <span class="ct__label">{it.label}</span>
+                  <span class="ct__arrow" aria-hidden="true">→</span>
+                </a>
+              </li>
+            ))
+          }
+        </ul>
+      </div>
+    </div>
+  </div>
+</section>
+
+<style>
+  .ct {
+    padding: clamp(48px, 8vw, 96px) 0;
+  }
+  .ct__card {
+    position: relative;
+    background: var(--bg-card);
+    border: 1px solid var(--rule);
+    padding: clamp(24px, 5vw, 56px);
+  }
+
+  .ct__badge {
+    position: absolute;
+    top: -22px;
+    right: 24px;
+    background: var(--accent);
+    color: var(--bg);
+    padding: 10px 18px 14px;
+    transform: rotate(6deg);
+    box-shadow: 4px 6px 0 -1px rgba(0, 0, 0, 0.18);
+    display: inline-flex;
+    flex-direction: column;
+    align-items: flex-start;
+    line-height: 1;
+    font-family: var(--font-mono);
+    z-index: 2;
+    border-radius: 2px;
+  }
+  .ct__badge-top {
+    font-size: 10px;
+    text-transform: uppercase;
+    letter-spacing: 0.16em;
+    opacity: 0.95;
+  }
+  .ct__badge-name {
+    font-family: var(--font-script);
+    font-weight: 700;
+    font-size: 36px;
+    letter-spacing: 0;
+    margin-top: 4px;
+  }
+
+  .ct__grid {
+    display: grid;
+    gap: 28px;
+    grid-template-columns: 1fr;
+    align-items: end;
+  }
+  @media (min-width: 760px) {
+    .ct__grid {
+      grid-template-columns: 1fr 1.1fr;
+      gap: 36px;
+    }
+  }
+
+  .ct__title {
+    font-family: var(--font-serif);
+    font-weight: 500;
+    line-height: 0.95;
+    font-size: clamp(54px, 10vw, 120px);
+    letter-spacing: -0.02em;
+    margin-top: 14px;
+  }
+  .ct__script {
+    font-style: italic;
+    font-weight: 700;
+  }
+  .ct__lede {
+    margin-top: 10px;
+    font-family: var(--font-mono);
+    font-size: 12px;
+    color: var(--ink-mute);
+  }
+
+  .ct__list {
+    list-style: none;
+    padding: 0;
+    margin: 0;
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+  }
+  .ct__row {
+    display: grid;
+    grid-template-columns: 96px 1fr auto;
+    align-items: center;
+    gap: 10px;
+    padding: 14px 18px;
+    border: 1px solid var(--rule);
+    font-family: var(--font-mono);
+    font-size: 12px;
+    transition:
+      background 0.18s ease,
+      color 0.18s ease,
+      transform 0.18s ease;
+    background: var(--bg);
+  }
+  .ct__row:hover {
+    background: var(--ink);
+    color: var(--bg);
+    transform: translateX(4px);
+  }
+  .ct__kind {
+    color: var(--ink-mute);
+    text-transform: lowercase;
+  }
+  .ct__row:hover .ct__kind {
+    color: color-mix(in srgb, var(--bg) 70%, var(--ink));
+  }
+  .ct__sep {
+    color: var(--ink-mute);
+    display: none;
+  }
+  .ct__label {
+    color: inherit;
+  }
+  .ct__arrow {
+    transition: transform 0.18s ease;
+    margin-left: 8px;
+  }
+  .ct__row:hover .ct__arrow {
+    transform: translateX(4px);
+  }
+  @media (min-width: 480px) {
+    .ct__sep {
+      display: inline;
+    }
+    .ct__row {
+      grid-template-columns: 96px 6px 1fr auto;
+    }
+  }
+</style>

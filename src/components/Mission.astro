@@ -1,0 +1,405 @@
+---
+import {
+  availability,
+  current,
+  services,
+  stackGroups,
+  tools,
+} from "../data/site";
+---
+
+<section id="stack" class="mission reveal">
+  <div class="container">
+    <header class="mission__head">
+      <span class="section-label">mission control</span>
+      <h2 class="mission__title">
+        Currently <span class="hl">available</span> for new&nbsp;experiments.
+      </h2>
+    </header>
+
+    <div class="dashed-rule" style="margin: 24px 0 32px"></div>
+
+    <div class="mission__grid">
+      <!-- Availability + current project -->
+      <article class="mission__col mission__col--avail">
+        <h3 class="col__title">// availability</h3>
+
+        <div class="avail">
+          <div class="avail__row">
+            <div class="avail__label">
+              <i class={`avail__dot avail__dot--${availability.shortMissions.state}`}></i>
+              {availability.shortMissions.label}
+            </div>
+            <span class="avail__eta">{availability.shortMissions.eta}</span>
+          </div>
+          <div class="solid-rule"></div>
+          <div class="avail__row">
+            <div class="avail__label">
+              <i class={`avail__dot avail__dot--${availability.longTerm.state}`}></i>
+              {availability.longTerm.label}
+            </div>
+            <span class="avail__eta">{availability.longTerm.eta}</span>
+          </div>
+        </div>
+
+        <h3 class="col__title col__title--mt">// current project</h3>
+
+        <div class="current">
+          <div class="current__head">
+            <h4 class="current__name">{current.title}</h4>
+            <span class="current__chip">{current.status}</span>
+          </div>
+          <p class="current__sub">{current.subtitle}</p>
+
+          <div class="current__bar" aria-label={`Progress ${current.progress}%`}>
+            <span style={`width:${current.progress}%`}></span>
+            <em>{current.progress}%</em>
+          </div>
+
+          <ul class="current__notes">
+            {current.notes.map((n) => <li>{n}</li>)}
+          </ul>
+        </div>
+      </article>
+
+      <!-- Stack -->
+      <article class="mission__col">
+        <h3 class="col__title">// stack &amp; competence</h3>
+        <ul class="stack">
+          {
+            stackGroups.map((g) => (
+              <li class="stack-group">
+                <header class="stack-group__head">
+                  <span class="stack-group__label">// {g.label}</span>
+                  <span class="stack-group__cap">{g.caption}</span>
+                </header>
+                <ul class="stack-group__items">
+                  {g.items.map((it) => (
+                    <li>{it}</li>
+                  ))}
+                </ul>
+              </li>
+            ))
+          }
+        </ul>
+
+        <h3 class="col__title col__title--mt">// tooling</h3>
+        <ul class="tools">
+          {tools.map((t) => <li>{t}</li>)}
+        </ul>
+      </article>
+
+      <!-- Services -->
+      <article class="mission__col mission__col--services">
+        <h3 class="col__title">// missions i take</h3>
+        <ul class="services">
+          {
+            services.map((s) => (
+              <li class="srv">
+                <span class="srv__code">{s.code}</span>
+                <h4 class="srv__title">{s.title}</h4>
+                <p class="srv__blurb">{s.blurb}</p>
+              </li>
+            ))
+          }
+        </ul>
+      </article>
+    </div>
+  </div>
+</section>
+
+<style>
+  .mission {
+    padding: clamp(48px, 8vw, 96px) 0;
+  }
+  .mission__head {
+    display: flex;
+    flex-direction: column;
+    gap: 6px;
+  }
+  .mission__title {
+    font-family: var(--font-serif);
+    font-weight: 500;
+    font-size: clamp(36px, 5.5vw, 64px);
+    line-height: 1;
+    letter-spacing: -0.015em;
+  }
+
+  .mission__grid {
+    display: grid;
+    grid-template-columns: 1fr;
+    gap: 28px;
+  }
+  @media (min-width: 760px) {
+    .mission__grid {
+      grid-template-columns: 1fr 1fr;
+    }
+  }
+  @media (min-width: 1080px) {
+    .mission__grid {
+      grid-template-columns: 1.1fr 1fr 1fr;
+    }
+  }
+
+  .mission__col {
+    border: 1px dashed var(--line);
+    padding: 22px;
+    background: var(--bg-card);
+  }
+  .mission__col--avail {
+    background: var(--bg-soft);
+    border: 1px solid var(--rule);
+  }
+
+  .col__title {
+    font-family: var(--font-mono);
+    font-size: 11px;
+    font-weight: 500;
+    color: var(--ink-mute);
+    letter-spacing: 0.1em;
+    text-transform: lowercase;
+    margin-bottom: 14px;
+  }
+  .col__title--mt {
+    margin-top: 28px;
+  }
+
+  /* Availability */
+  .avail {
+    border: 1px solid var(--rule);
+    background: var(--bg);
+    padding: 14px 16px;
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+  }
+  .avail__row {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    gap: 12px;
+    padding: 6px 0;
+  }
+  .avail__label {
+    display: inline-flex;
+    align-items: center;
+    gap: 10px;
+    font-family: var(--font-mono);
+    font-size: 12px;
+    color: var(--ink);
+  }
+  .avail__dot {
+    width: 8px;
+    height: 8px;
+    border-radius: 999px;
+  }
+  .avail__dot--open {
+    background: var(--highlight);
+    box-shadow: 0 0 0 4px color-mix(in srgb, var(--highlight) 30%, transparent);
+    animation: pulse 2s ease-in-out infinite;
+  }
+  .avail__dot--selective {
+    background: var(--gold);
+    box-shadow: 0 0 0 4px color-mix(in srgb, var(--gold) 30%, transparent);
+  }
+  .avail__dot--closed {
+    background: var(--accent);
+  }
+  .avail__eta {
+    font-family: var(--font-mono);
+    font-size: 11px;
+    color: var(--ink-mute);
+  }
+
+  /* Current */
+  .current {
+    margin-top: 4px;
+  }
+  .current__head {
+    display: flex;
+    justify-content: space-between;
+    align-items: baseline;
+    gap: 8px;
+  }
+  .current__name {
+    font-family: var(--font-serif);
+    font-weight: 600;
+    font-size: 22px;
+  }
+  .current__chip {
+    font-family: var(--font-mono);
+    font-size: 9px;
+    text-transform: uppercase;
+    letter-spacing: 0.12em;
+    color: var(--accent);
+    border: 1px solid var(--accent);
+    padding: 3px 8px;
+  }
+  .current__sub {
+    font-family: var(--font-mono);
+    font-size: 12px;
+    color: var(--ink-soft);
+    margin-top: 2px;
+  }
+  .current__bar {
+    margin: 14px 0 12px;
+    height: 6px;
+    background: var(--line);
+    position: relative;
+    border-radius: 1px;
+  }
+  .current__bar > span {
+    position: absolute;
+    inset: 0;
+    background: var(--ink);
+    transform-origin: left;
+    transform: scaleX(0);
+    animation: grow 1.4s 0.2s ease-out forwards;
+  }
+  .current__bar em {
+    position: absolute;
+    right: 0;
+    top: -18px;
+    font-style: normal;
+    font-family: var(--font-mono);
+    font-size: 10px;
+    color: var(--ink-mute);
+  }
+  @keyframes grow {
+    to {
+      transform: scaleX(1);
+    }
+  }
+  .current__notes {
+    list-style: none;
+    padding: 0;
+    display: flex;
+    flex-direction: column;
+    gap: 4px;
+    font-family: var(--font-mono);
+    font-size: 11px;
+    color: var(--ink-soft);
+  }
+  .current__notes li::before {
+    content: "→";
+    margin-right: 8px;
+    color: var(--accent);
+  }
+
+  /* Stack — grouped, no percentages */
+  .stack {
+    list-style: none;
+    padding: 0;
+    display: flex;
+    flex-direction: column;
+    gap: 14px;
+  }
+  .stack-group {
+    display: flex;
+    flex-direction: column;
+    gap: 4px;
+    padding-bottom: 12px;
+    border-bottom: 1px dashed var(--line);
+  }
+  .stack-group:last-child {
+    border-bottom: 0;
+    padding-bottom: 0;
+  }
+  .stack-group__head {
+    display: flex;
+    justify-content: space-between;
+    align-items: baseline;
+    gap: 8px;
+  }
+  .stack-group__label {
+    font-family: var(--font-mono);
+    font-size: 10px;
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: 0.16em;
+    color: var(--accent);
+  }
+  .stack-group__cap {
+    font-family: var(--font-mono);
+    font-size: 10px;
+    color: var(--ink-mute);
+    letter-spacing: 0.06em;
+    text-transform: lowercase;
+  }
+  .stack-group__items {
+    list-style: none;
+    padding: 0;
+    margin: 4px 0 0;
+    display: flex;
+    flex-direction: column;
+    gap: 3px;
+  }
+  .stack-group__items li {
+    font-family: var(--font-mono);
+    font-size: 12px;
+    color: var(--ink);
+    line-height: 1.45;
+  }
+  .stack-group__items li::before {
+    content: "→ ";
+    color: var(--ink-mute);
+    margin-right: 2px;
+  }
+
+  .tools {
+    list-style: none;
+    padding: 0;
+    margin: 0;
+    display: flex;
+    flex-wrap: wrap;
+    gap: 6px;
+  }
+  .tools li {
+    font-family: var(--font-mono);
+    font-size: 10px;
+    text-transform: uppercase;
+    letter-spacing: 0.12em;
+    border: 1px solid var(--line);
+    padding: 6px 10px;
+    color: var(--ink-soft);
+  }
+
+  /* Services */
+  .services {
+    list-style: none;
+    padding: 0;
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+  }
+  .srv {
+    border-top: 1px solid var(--line);
+    padding-top: 12px;
+    display: grid;
+    grid-template-columns: 28px 1fr;
+    gap: 8px 12px;
+    align-items: baseline;
+  }
+  .srv:first-child {
+    border-top: 0;
+    padding-top: 0;
+  }
+  .srv__code {
+    font-family: var(--font-mono);
+    font-size: 10px;
+    letter-spacing: 0.1em;
+    color: var(--accent);
+  }
+  .srv__title {
+    font-family: var(--font-serif);
+    font-weight: 600;
+    font-size: 22px;
+  }
+  .srv__blurb {
+    grid-column: 2 / 3;
+    font-family: var(--font-mono);
+    font-size: 11px;
+    color: var(--ink-soft);
+    line-height: 1.55;
+  }
+</style>

@@ -1,0 +1,308 @@
+---
+import { lab } from "../data/site";
+import Orbit from "./decorative/Orbit.astro";
+---
+
+<section id="top" class="hero">
+  <div class="container hero__grid">
+    <!-- Left: hero copy (now flush against the container edge so all //... section labels line up) -->
+    <div class="hero__main" id="about">
+      <div class="hero__head">
+        <span class="section-label">who i am</span>
+        <span class="hero__hello">hello, world.</span>
+      </div>
+
+      <h1 class="hero__title">
+        <span class="t1">Engineer<span class="dot-end">.</span></span>
+        <span class="t2">Scientist<span class="dot-end">.</span></span>
+        <span class="t3">
+          <span class="hl">Operator</span><span class="dot-end">.</span>
+        </span>
+      </h1>
+
+      <p class="hero__lede">
+        Full-stack engineer & fractional CTO. <em>turning</em> messy product
+        hypotheses into shipped software that{" "}
+        <span class="circled"
+          >compounds<svg viewBox="0 0 200 60" preserveAspectRatio="none"
+            ><path
+              d="M 6 30 C 4 12 70 4 110 6 C 178 8 198 22 196 32 C 194 46 130 56 96 54 C 50 52 6 48 8 30"
+              stroke="currentColor"
+              stroke-width="1.5"
+              fill="none"
+              stroke-linecap="round"></path></svg
+          ></span
+        >.
+      </p>
+
+      <p class="hero__sub">
+        I take products from <em>zero → one → ten</em>.
+      </p>
+
+      <div class="hero__cta">
+        <a class="btn btn--primary" href="#contact">
+          Let's talk <span class="arrow">→</span>
+        </a>
+      </div>
+    </div>
+
+    <!-- Right: SVG illustration + meta strip -->
+    <div class="hero__viz">
+      <div class="viz__frame">
+        <div class="viz__head">
+          <span>fig. 01 — operator orbital model</span>
+          <span class="viz__id">[F-01]</span>
+        </div>
+        <Orbit class="viz__svg" />
+        <div class="viz__legend">
+          <span><i style="background:var(--ink)"></i> ship</span>
+          <span><i style="background:var(--accent)"></i> learn</span>
+          <span><i style="background:var(--highlight)"></i> grow</span>
+        </div>
+      </div>
+
+      <aside class="hero__meta" aria-label="Lab metadata">
+        <div class="meta__row">
+          <span class="meta__k">Loc.</span>
+          <span class="meta__v">{lab.loc}</span>
+        </div>
+        <div class="meta__sep" aria-hidden="true"></div>
+        <div class="meta__row">
+          <span class="meta__k">Status</span>
+          <span class="meta__v meta__status">
+            <i class="dot"></i>{lab.status}
+          </span>
+        </div>
+      </aside>
+    </div>
+  </div>
+
+  <div class="dashed-rule" style="margin-top: 48px"></div>
+</section>
+
+<style>
+  .hero {
+    padding: clamp(28px, 6vw, 64px) 0 32px;
+  }
+  .hero__grid {
+    display: grid;
+    grid-template-columns: 1fr;
+    gap: 36px;
+  }
+
+  /* Meta strip — under the orbit graph, horizontal */
+  .hero__meta {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 12px;
+    padding: 10px 12px;
+    border: 1px dashed var(--line);
+    background: transparent;
+    font-family: var(--font-mono);
+    font-size: 10px;
+    text-transform: uppercase;
+    letter-spacing: 0.12em;
+    color: var(--ink-mute);
+  }
+  .meta__row {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    min-width: 0;
+  }
+  .meta__k {
+    color: var(--ink-mute);
+  }
+  .meta__v {
+    color: var(--ink);
+    font-weight: 500;
+  }
+  .meta__sep {
+    flex: 0 0 1px;
+    align-self: stretch;
+    background-image: linear-gradient(
+      to bottom,
+      var(--rule) 0,
+      var(--rule) 3px,
+      transparent 3px,
+      transparent 6px
+    );
+    background-size: 1px 6px;
+  }
+  .meta__status {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    color: var(--highlight);
+  }
+  .dot {
+    width: 6px;
+    height: 6px;
+    background: var(--highlight);
+    border-radius: 999px;
+    box-shadow: 0 0 0 3px color-mix(in srgb, var(--highlight) 30%, transparent);
+    animation: pulse 2s ease-in-out infinite;
+  }
+
+  /* Main copy */
+  .hero__head {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    margin-bottom: 18px;
+  }
+  .hero__hello {
+    font-family: var(--font-script);
+    font-weight: 500;
+    color: var(--accent);
+    font-size: 22px;
+    transform: rotate(-3deg);
+  }
+  .hero__title {
+    font-family: var(--font-serif);
+    font-weight: 500;
+    line-height: 0.95;
+    letter-spacing: -0.02em;
+    font-size: clamp(48px, 9vw, 120px);
+    color: var(--ink);
+    display: flex;
+    flex-direction: column;
+    gap: clamp(2px, 0.6vw, 8px);
+  }
+  .hero__title .dot-end {
+    color: var(--accent);
+  }
+  .hero__title .t2 {
+    font-style: italic;
+    color: var(--ink-soft);
+  }
+  .hero__title .t3 {
+    font-style: normal;
+  }
+  .hero__title .hl {
+    font-family: var(--font-serif);
+    font-weight: 700;
+  }
+
+  .hero__lede {
+    margin-top: 24px;
+    font-family: var(--font-serif);
+    font-size: clamp(18px, 2.4vw, 24px);
+    line-height: 1.45;
+    color: var(--ink);
+    max-width: 56ch;
+  }
+  .hero__lede em {
+    font-style: italic;
+    color: var(--ink-mute);
+  }
+  .circled {
+    position: relative;
+    display: inline-block;
+    color: inherit;
+  }
+  .circled svg {
+    position: absolute;
+    inset: -12% -8% -10% -8%;
+    width: 116%;
+    height: 122%;
+    color: var(--accent);
+    pointer-events: none;
+  }
+
+  .hero__sub {
+    margin-top: 18px;
+    font-family: var(--font-mono);
+    font-size: 13px;
+    line-height: 1.65;
+    color: var(--ink-soft);
+    max-width: 60ch;
+  }
+  .hero__sub strong {
+    color: var(--ink);
+    font-weight: 500;
+  }
+  .hero__sub em {
+    font-style: italic;
+    color: var(--accent);
+    font-family: var(--font-script);
+    font-weight: 500;
+    font-size: 17px;
+  }
+
+  .hero__cta {
+    margin-top: 28px;
+    display: flex;
+    flex-wrap: wrap;
+    gap: 12px;
+  }
+
+  /* Right column: viz */
+  .hero__viz {
+    display: flex;
+    flex-direction: column;
+    gap: 16px;
+  }
+  .viz__frame {
+    border: 1px solid var(--rule);
+    background: var(--bg-card);
+    padding: 12px;
+    position: relative;
+  }
+  .viz__head {
+    display: flex;
+    justify-content: space-between;
+    font-family: var(--font-mono);
+    font-size: 10px;
+    text-transform: uppercase;
+    letter-spacing: 0.1em;
+    color: var(--ink-mute);
+    margin-bottom: 6px;
+  }
+  .viz__svg {
+    aspect-ratio: 1 / 1;
+  }
+  .viz__legend {
+    display: flex;
+    gap: 14px;
+    margin-top: 6px;
+    font-family: var(--font-mono);
+    font-size: 10px;
+    color: var(--ink-soft);
+  }
+  .viz__legend i {
+    display: inline-block;
+    width: 8px;
+    height: 8px;
+    margin-right: 6px;
+    transform: translateY(1px);
+  }
+
+  .viz__avail {
+    padding: 16px;
+  }
+  .viz__avail-txt {
+    margin-top: 10px;
+    font-family: var(--font-mono);
+    font-size: 12px;
+    color: var(--ink-soft);
+  }
+  .viz__avail-txt strong {
+    color: var(--ink);
+    font-weight: 600;
+  }
+
+  @media (min-width: 720px) {
+    .hero__cta {
+      gap: 16px;
+    }
+  }
+  @media (min-width: 980px) {
+    .hero__grid {
+      grid-template-columns: 1fr 380px;
+      gap: 48px;
+      align-items: start;
+    }
+  }
+</style>

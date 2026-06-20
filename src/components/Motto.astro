@@ -1,0 +1,157 @@
+---
+const words = [
+  { text: "Experiment", note: "// hypothesis" },
+  { text: "Ship", note: "// ≥ 1× / week" },
+  { text: "Grow", note: "// compound" },
+];
+---
+
+<section class="motto reveal" aria-label="Motto">
+  <div class="container">
+    <header class="motto__head">
+      <span class="section-label">operating principles</span>
+      <span class="motto__count">3 / 3</span>
+    </header>
+
+    <div class="dashed-rule" style="margin: 16px 0 28px"></div>
+
+    <div class="motto__row">
+      {
+        words.map((w, i) => (
+          <div class="word" style={`animation-delay:${i * 120}ms`}>
+            <span class="word__note">{w.note}</span>
+            <span class="word__txt">
+              {w.text}
+              <span class="word__dot" aria-hidden="true">.</span>
+            </span>
+            <span class="word__bar" aria-hidden="true" />
+          </div>
+        ))
+      }
+    </div>
+
+    <p class="motto__caption">
+      Three actions on every project I touch — the only loop that compounds.
+    </p>
+  </div>
+</section>
+
+<style>
+  .motto {
+    padding: clamp(40px, 7vw, 80px) 0 clamp(24px, 4vw, 40px);
+  }
+  .motto__head {
+    display: flex;
+    justify-content: space-between;
+    align-items: baseline;
+  }
+  .motto__count {
+    font-family: var(--font-mono);
+    font-size: 11px;
+    color: var(--ink-mute);
+    letter-spacing: 0.1em;
+  }
+
+  .motto__row {
+    display: flex;
+    flex-direction: column;
+    gap: clamp(20px, 4vw, 40px);
+  }
+  @media (min-width: 720px) {
+    .motto__row {
+      flex-direction: row;
+      align-items: flex-end;
+      justify-content: space-between;
+      gap: clamp(20px, 4vw, 56px);
+      flex-wrap: nowrap;
+    }
+  }
+
+  .word {
+    position: relative;
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+    min-width: 0;
+    opacity: 0;
+    transform: translateY(16px);
+    animation: motto-in 0.7s cubic-bezier(0.2, 0.8, 0.2, 1) forwards;
+    animation-play-state: paused;
+  }
+  .reveal.is-visible .word {
+    animation-play-state: running;
+  }
+  .word__note {
+    font-family: var(--font-mono);
+    font-size: 11px;
+    color: var(--ink-mute);
+    letter-spacing: 0.1em;
+  }
+  .word__txt {
+    font-family: var(--font-serif);
+    font-weight: 500;
+    line-height: 0.92;
+    letter-spacing: -0.025em;
+    font-size: clamp(52px, 8.2vw, 116px);
+    color: var(--ink);
+    display: inline-flex;
+    align-items: baseline;
+    white-space: nowrap;
+  }
+  .word:nth-child(2) .word__txt {
+    font-style: italic;
+    color: var(--ink-soft);
+  }
+  .word:nth-child(3) .word__txt {
+    font-weight: 700;
+  }
+  .word__dot {
+    color: var(--accent);
+    margin-left: 0.02em;
+  }
+  .word__bar {
+    height: 2px;
+    background: var(--ink);
+    transform-origin: left;
+    transform: scaleX(0);
+    transition: transform 0.7s 0.5s cubic-bezier(0.2, 0.8, 0.2, 1);
+  }
+  .word:nth-child(2) .word__bar {
+    background: var(--accent);
+  }
+  .word:nth-child(3) .word__bar {
+    background: var(--highlight);
+  }
+  .reveal.is-visible .word__bar {
+    transform: scaleX(1);
+  }
+
+  .motto__caption {
+    margin-top: 20px;
+    font-family: var(--font-script);
+    font-weight: 500;
+    color: var(--ink-soft);
+    font-size: clamp(20px, 2.4vw, 26px);
+    transform: rotate(-1deg);
+    max-width: 60ch;
+  }
+
+  @keyframes motto-in {
+    to {
+      opacity: 1;
+      transform: translateY(0);
+    }
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    .word {
+      opacity: 1;
+      transform: none;
+      animation: none;
+    }
+    .word__bar {
+      transform: scaleX(1);
+      transition: none;
+    }
+  }
+</style>

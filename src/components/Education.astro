@@ -1,0 +1,212 @@
+---
+import { education } from "../data/site";
+---
+
+<section id="education" class="edu reveal">
+  <div class="container">
+    <header class="edu__head">
+      <span class="section-label">credentials</span>
+      <h2 class="edu__title">
+        Formal training & <em>verified</em> knowledge.
+      </h2>
+    </header>
+
+    <div class="dashed-rule" style="margin: 24px 0 28px"></div>
+
+    <ul class="edu__list">
+      {
+        education.map((e, i) => {
+          const Tag = e.url ? "a" : "div";
+          const tagProps = e.url
+            ? {
+                href: e.url,
+                target: "_blank",
+                rel: "noopener noreferrer",
+                "aria-label": `Open ${e.title}`,
+              }
+            : {};
+          return (
+            <li class="edu-item">
+              <Tag class={`edu-card${e.url ? " edu-card--link" : ""}`} {...tagProps}>
+                <header class="edu-card__head">
+                  <span class={`edu-card__kind edu-card__kind--${e.kind}`}>
+                    {e.kind === "school" ? "school" : "certification"}
+                  </span>
+                  <span class="edu-card__code">{e.code}</span>
+                </header>
+
+                <h3 class="edu-card__title">{e.title}</h3>
+                <p class="edu-card__org">
+                  <span>{e.org}</span>
+                  <span class="edu-card__sep">·</span>
+                  <span class="edu-card__period">{e.period}</span>
+                </p>
+
+                <p class="edu-card__blurb">{e.blurb}</p>
+
+                {e.url && (
+                  <span class="edu-card__visit" aria-hidden="true">
+                    {e.kind === "school" ? "school site" : "verify"}{" "}
+                    <span class="arrow">↗</span>
+                  </span>
+                )}
+
+                <span class="edu-card__index">
+                  {String(i + 1).padStart(2, "0")}
+                </span>
+              </Tag>
+            </li>
+          );
+        })
+      }
+    </ul>
+  </div>
+</section>
+
+<style>
+  .edu {
+    padding: clamp(24px, 5vw, 56px) 0 clamp(40px, 6vw, 72px);
+  }
+  .edu__head {
+    display: flex;
+    flex-direction: column;
+    gap: 6px;
+  }
+  .edu__title {
+    font-family: var(--font-serif);
+    font-weight: 500;
+    font-size: clamp(36px, 5.5vw, 64px);
+    line-height: 1;
+    letter-spacing: -0.015em;
+  }
+  .edu__title em {
+    font-style: italic;
+    color: var(--ink-soft);
+  }
+
+  .edu__list {
+    list-style: none;
+    padding: 0;
+    margin: 0;
+    display: grid;
+    grid-template-columns: 1fr;
+    gap: 16px;
+  }
+  @media (min-width: 760px) {
+    .edu__list {
+      grid-template-columns: 1fr 1fr;
+    }
+  }
+
+  .edu-item {
+    display: flex;
+  }
+
+  .edu-card {
+    flex: 1;
+    border: 1px solid var(--rule);
+    background: var(--bg-card);
+    padding: 22px;
+    position: relative;
+    display: flex;
+    flex-direction: column;
+    color: inherit;
+    text-decoration: none;
+    transition:
+      transform 0.25s ease,
+      box-shadow 0.25s ease;
+  }
+  .edu-card--link {
+    cursor: pointer;
+  }
+  .edu-card--link:hover {
+    transform: translateY(-3px);
+    box-shadow: 6px 6px 0 -2px rgba(184, 57, 44, 0.18);
+  }
+
+  .edu-card__head {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 12px;
+  }
+  .edu-card__kind {
+    font-family: var(--font-mono);
+    font-size: 9px;
+    text-transform: uppercase;
+    letter-spacing: 0.16em;
+    padding: 4px 8px;
+    border: 1px solid currentColor;
+  }
+  .edu-card__kind--school {
+    color: var(--highlight);
+  }
+  .edu-card__kind--cert {
+    color: var(--accent);
+  }
+  .edu-card__code {
+    font-family: var(--font-mono);
+    font-size: 10px;
+    text-transform: uppercase;
+    letter-spacing: 0.12em;
+    color: var(--ink-mute);
+  }
+
+  .edu-card__title {
+    font-family: var(--font-serif);
+    font-weight: 600;
+    font-size: 30px;
+    line-height: 1.05;
+    letter-spacing: -0.01em;
+  }
+  .edu-card__org {
+    margin-top: 6px;
+    font-family: var(--font-mono);
+    font-size: 11px;
+    color: var(--ink-soft);
+    display: flex;
+    flex-wrap: wrap;
+    gap: 6px;
+    align-items: baseline;
+  }
+  .edu-card__sep {
+    color: var(--ink-mute);
+  }
+  .edu-card__period {
+    color: var(--ink-mute);
+  }
+
+  .edu-card__blurb {
+    margin-top: 14px;
+    font-family: var(--font-mono);
+    font-size: 12px;
+    color: var(--ink-soft);
+    line-height: 1.55;
+    flex: 1;
+  }
+
+  .edu-card__visit {
+    margin-top: 16px;
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    font-family: var(--font-mono);
+    font-size: 11px;
+    text-transform: lowercase;
+    letter-spacing: 0.04em;
+    color: var(--accent);
+    transition: transform 0.18s ease;
+  }
+  .edu-card--link:hover .edu-card__visit {
+    transform: translateX(3px);
+  }
+  .edu-card__index {
+    position: absolute;
+    bottom: 12px;
+    right: 14px;
+    font-family: var(--font-mono);
+    font-size: 10px;
+    color: var(--ink-mute);
+    letter-spacing: 0.1em;
+  }
+</style>

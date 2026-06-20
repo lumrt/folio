@@ -1,0 +1,64 @@
+---
+interface Props {
+  text?: string;
+  size?: number;
+  class?: string;
+}
+const {
+  text = "DEV · LAB · 2026 · DEV · LAB · 2026 · ",
+  size = 110,
+  class: className = "",
+} = Astro.props;
+
+const radius = size / 2 - 12;
+---
+
+<svg
+  class={`stamp-svg ${className}`}
+  viewBox={`0 0 ${size} ${size}`}
+  width={size}
+  height={size}
+  aria-hidden="true"
+>
+  <defs>
+    <path
+      id="stamp-circle"
+      d={`M ${size / 2}, ${size / 2} m -${radius}, 0 a ${radius},${radius} 0 1,1 ${radius * 2},0 a ${radius},${radius} 0 1,1 -${radius * 2},0`}
+    ></path>
+  </defs>
+  <circle
+    cx={size / 2}
+    cy={size / 2}
+    r={size / 2 - 2}
+    fill="none"
+    stroke="currentColor"
+    stroke-width="1.4"></circle>
+  <circle
+    cx={size / 2}
+    cy={size / 2}
+    r={size / 2 - 8}
+    fill="none"
+    stroke="currentColor"
+    stroke-width="0.6"
+    stroke-dasharray="2 2"></circle>
+  <text fill="currentColor" font-family="IBM Plex Mono, monospace" font-size="9" letter-spacing="2">
+    <textPath href="#stamp-circle" startOffset="0">{text}</textPath>
+  </text>
+  <g
+    font-family="IBM Plex Mono, monospace"
+    font-size="9"
+    font-weight="600"
+    text-anchor="middle"
+    fill="currentColor"
+  >
+    <text x={size / 2} y={size / 2 - 2}>FOLIO</text>
+    <text x={size / 2} y={size / 2 + 10} font-size="7" opacity="0.7">/ EST · 2026</text>
+  </g>
+</svg>
+
+<style>
+  .stamp-svg {
+    color: var(--accent);
+    transform: rotate(-8deg);
+  }
+</style>

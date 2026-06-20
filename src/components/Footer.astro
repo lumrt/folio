@@ -1,0 +1,121 @@
+---
+import Stamp from "./decorative/Stamp.astro";
+import { site } from "../data/site";
+---
+
+<footer class="ft">
+  <div class="container">
+    <div class="dashed-rule"></div>
+    <div class="ft__grid">
+      <div class="ft__left">
+        <p class="ft__quote">
+          "The best way to predict the future is to <em>build</em> it."
+          <span class="ft__author">— Alan Kay</span>
+        </p>
+        <p class="ft__motto">
+          keep experimenting. <span class="hl">build meaningful things.</span>
+        </p>
+      </div>
+
+      <div class="ft__center">
+        <Stamp />
+      </div>
+
+      <div class="ft__right">
+        <p class="ft__meta">
+          <span>© {new Date().getFullYear()} · {site.handle}</span>
+          <span>{site.location}</span>
+          <span>handcrafted in HTML & CSS</span>
+        </p>
+        <a class="ft__top" href="#top" aria-label="Back to top">
+          back to top ↑
+        </a>
+      </div>
+    </div>
+  </div>
+</footer>
+
+<style>
+  .ft {
+    padding: 32px 0 40px;
+    margin-top: 48px;
+  }
+  .ft__grid {
+    margin-top: 28px;
+    display: grid;
+    grid-template-columns: 1fr;
+    gap: 24px;
+    align-items: center;
+  }
+  @media (min-width: 760px) {
+    .ft__grid {
+      grid-template-columns: 1.4fr auto 1fr;
+    }
+  }
+  .ft__quote {
+    font-family: var(--font-serif);
+    font-style: italic;
+    font-size: 18px;
+    line-height: 1.45;
+    color: var(--ink-soft);
+    max-width: 36ch;
+  }
+  .ft__quote em {
+    color: var(--accent);
+    font-weight: 600;
+  }
+  .ft__author {
+    display: block;
+    font-style: normal;
+    font-family: var(--font-mono);
+    font-size: 11px;
+    color: var(--ink-mute);
+    margin-top: 4px;
+  }
+  .ft__motto {
+    margin-top: 12px;
+    font-family: var(--font-mono);
+    font-size: 11px;
+    text-transform: uppercase;
+    letter-spacing: 0.14em;
+    color: var(--ink);
+  }
+  .ft__center {
+    display: flex;
+    justify-content: center;
+  }
+  .ft__right {
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+    align-items: flex-start;
+  }
+  @media (min-width: 760px) {
+    .ft__right {
+      align-items: flex-end;
+      text-align: right;
+    }
+  }
+  .ft__meta {
+    display: flex;
+    flex-direction: column;
+    gap: 2px;
+    font-family: var(--font-mono);
+    font-size: 11px;
+    color: var(--ink-mute);
+  }
+  .ft__top {
+    font-family: var(--font-mono);
+    font-size: 12px;
+    color: var(--accent);
+    border: 1px dashed var(--accent);
+    padding: 8px 12px;
+    transition:
+      background 0.18s,
+      color 0.18s;
+  }
+  .ft__top:hover {
+    background: var(--accent);
+    color: var(--bg);
+  }
+</style>

@@ -1,0 +1,115 @@
+---
+interface Props {
+  class?: string;
+}
+const { class: className = "" } = Astro.props;
+---
+
+<svg
+  class={`orbit ${className}`}
+  viewBox="0 0 320 320"
+  fill="none"
+  stroke="currentColor"
+  aria-hidden="true"
+>
+  <defs>
+    <pattern id="dotG" width="6" height="6" patternUnits="userSpaceOnUse">
+      <circle cx="1" cy="1" r="0.6" fill="currentColor" opacity="0.35"></circle>
+    </pattern>
+  </defs>
+
+  <!-- background grid square -->
+  <rect
+    x="20"
+    y="20"
+    width="280"
+    height="280"
+    stroke-dasharray="2 4"
+    stroke-width="0.6"
+    opacity="0.5"></rect>
+
+  <!-- planet core -->
+  <circle cx="160" cy="160" r="14" fill="currentColor" opacity="0.9"></circle>
+  <circle cx="160" cy="160" r="22" stroke-width="1" opacity="0.5"></circle>
+
+  <!-- orbits — colored to match the legend (ship · learn · grow) -->
+  <g class="orbit-ring orbit-ring--ship">
+    <ellipse
+      cx="160"
+      cy="160"
+      rx="60"
+      ry="20"
+      stroke-width="1.2"
+      stroke-dasharray="3 3"></ellipse>
+    <circle cx="220" cy="160" r="3.2" fill="currentColor"></circle>
+  </g>
+  <g class="orbit-ring orbit-ring--learn" transform="rotate(-30 160 160)">
+    <ellipse cx="160" cy="160" rx="100" ry="36" stroke-width="1.1"></ellipse>
+    <circle cx="60" cy="160" r="4" fill="currentColor"></circle>
+  </g>
+  <g class="orbit-ring orbit-ring--grow" transform="rotate(45 160 160)">
+    <ellipse
+      cx="160"
+      cy="160"
+      rx="135"
+      ry="55"
+      stroke-width="1"
+      stroke-dasharray="1 2"></ellipse>
+    <circle cx="295" cy="160" r="3" fill="currentColor"></circle>
+  </g>
+
+  <!-- coordinate annotation -->
+  <g
+    font-family="IBM Plex Mono, monospace"
+    font-size="8"
+    fill="currentColor"
+    opacity="0.55"
+    stroke="none"
+  >
+    <text x="22" y="34">x · 0,0</text>
+    <text x="262" y="312" text-anchor="end">∂y/∂x = growth</text>
+  </g>
+
+  <!-- crosshair top right -->
+  <g stroke-width="0.7" opacity="0.5">
+    <line x1="240" y1="36" x2="252" y2="36"></line>
+    <line x1="246" y1="30" x2="246" y2="42"></line>
+  </g>
+</svg>
+
+<style>
+  .orbit {
+    width: 100%;
+    height: auto;
+    color: var(--ink);
+  }
+  .orbit-ring {
+    transform-origin: 160px 160px;
+    animation: spin 38s linear infinite;
+  }
+  /* ship — black, fastest, inner */
+  .orbit-ring--ship {
+    color: var(--ink);
+  }
+  /* learn — red, mid, reverse direction */
+  .orbit-ring--learn {
+    color: var(--accent);
+    animation-duration: 24s;
+    animation-direction: reverse;
+  }
+  /* grow — green, slowest, outer */
+  .orbit-ring--grow {
+    color: var(--highlight);
+    animation-duration: 56s;
+  }
+  @keyframes spin {
+    to {
+      transform: rotate(360deg);
+    }
+  }
+  @media (prefers-reduced-motion: reduce) {
+    .orbit-ring {
+      animation: none;
+    }
+  }
+</style>

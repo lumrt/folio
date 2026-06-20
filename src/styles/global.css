@@ -1,0 +1,329 @@
+/* === Self-hosted fonts (latin subset only — keep payload tiny) === */
+@import "@fontsource/ibm-plex-mono/latin-400.css";
+@import "@fontsource/ibm-plex-mono/latin-500.css";
+@import "@fontsource/ibm-plex-mono/latin-600.css";
+@import "@fontsource/cormorant-garamond/latin-400.css";
+@import "@fontsource/cormorant-garamond/latin-500.css";
+@import "@fontsource/cormorant-garamond/latin-600-italic.css";
+@import "@fontsource/cormorant-garamond/latin-700.css";
+@import "@fontsource/caveat/latin-400.css";
+@import "@fontsource/caveat/latin-500.css";
+@import "@fontsource/caveat/latin-700.css";
+
+/* === Design tokens === */
+:root {
+  /* Lab notebook palette */
+  --bg: #f1ece1;
+  --bg-soft: #ebe5d6;
+  --bg-card: #f7f2e6;
+  --ink: #161514;
+  --ink-soft: #3c372f;
+  --ink-mute: #6b6357;
+  --line: #d3c9b3;
+  --line-soft: #e2d9c4;
+  --rule: #1d1c1a;
+  --accent: #b8392c; /* stamp red */
+  --accent-soft: #d8554a;
+  --highlight: #4d6a37; /* forest highlighter */
+  --highlight-soft: #809a64;
+  --gold: #c89a3a;
+
+  /* Typography */
+  --font-mono: "IBM Plex Mono", ui-monospace, "SF Mono", Menlo, monospace;
+  --font-serif: "Cormorant Garamond", "Iowan Old Style", Georgia, serif;
+  --font-script: "Caveat", "Bradley Hand", cursive;
+
+  /* Sizes */
+  --container: 1240px;
+  --gutter: clamp(16px, 4vw, 32px);
+  --radius: 2px;
+}
+
+
+/* === Reset === */
+*,
+*::before,
+*::after {
+  box-sizing: border-box;
+}
+* {
+  margin: 0;
+}
+html {
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+  text-rendering: optimizeLegibility;
+  scroll-behavior: smooth;
+  scroll-padding-top: 80px;
+}
+body {
+  font-family: var(--font-mono);
+  font-size: 14px;
+  line-height: 1.55;
+  color: var(--ink);
+  background: var(--bg);
+  background-image:
+    /* subtle horizontal lines like a notebook */ linear-gradient(
+      to bottom,
+      transparent 0,
+      transparent calc(28px - 1px),
+      rgba(28, 24, 18, 0.035) calc(28px - 1px),
+      rgba(28, 24, 18, 0.035) 28px
+    ),
+    /* faint vertical line on the left margin like real lab notebook */
+      linear-gradient(
+        to right,
+        transparent 0,
+        transparent calc(var(--gutter) + 60px),
+        rgba(184, 57, 44, 0.08) calc(var(--gutter) + 60px),
+        rgba(184, 57, 44, 0.08) calc(var(--gutter) + 61px),
+        transparent calc(var(--gutter) + 61px)
+      );
+  background-attachment: fixed;
+  overflow-x: hidden;
+}
+
+img,
+picture,
+video,
+canvas,
+svg {
+  display: block;
+  max-width: 100%;
+}
+input,
+button,
+textarea,
+select {
+  font: inherit;
+}
+a {
+  color: inherit;
+  text-decoration: none;
+}
+button {
+  background: none;
+  border: none;
+  cursor: pointer;
+  color: inherit;
+  padding: 0;
+}
+
+/* === Utility patterns === */
+.container {
+  width: 100%;
+  max-width: var(--container);
+  margin-inline: auto;
+  padding-inline: var(--gutter);
+}
+
+.eyebrow {
+  font-family: var(--font-mono);
+  font-size: 10px;
+  font-weight: 500;
+  text-transform: uppercase;
+  letter-spacing: 0.18em;
+  color: var(--ink-mute);
+}
+
+.section-label {
+  font-family: var(--font-mono);
+  font-size: 11px;
+  font-weight: 500;
+  letter-spacing: 0.12em;
+  color: var(--ink-soft);
+  text-transform: lowercase;
+}
+
+.section-label::before {
+  content: "// ";
+  color: var(--accent);
+}
+
+.script {
+  font-family: var(--font-script);
+  font-weight: 500;
+  color: var(--accent);
+}
+
+.dashed-rule {
+  width: 100%;
+  height: 1px;
+  background-image: linear-gradient(
+    to right,
+    var(--rule) 0,
+    var(--rule) 4px,
+    transparent 4px,
+    transparent 8px
+  );
+  background-size: 8px 1px;
+  background-repeat: repeat-x;
+}
+
+.solid-rule {
+  width: 100%;
+  height: 1px;
+  background: var(--rule);
+}
+
+/* circular stamp with rotated text — used for "AVAILABLE" badges */
+.stamp {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  border: 2px solid var(--accent);
+  color: var(--accent);
+  font-family: var(--font-mono);
+  font-weight: 600;
+  font-size: 10px;
+  text-transform: uppercase;
+  letter-spacing: 0.16em;
+  padding: 8px 14px;
+  border-radius: 999px;
+  position: relative;
+  background: rgba(184, 57, 44, 0.05);
+}
+.stamp::before {
+  content: "●";
+  display: inline-block;
+  margin-right: 6px;
+  color: var(--accent);
+  animation: pulse 2.4s ease-in-out infinite;
+}
+@keyframes pulse {
+  0%,
+  100% {
+    opacity: 1;
+  }
+  50% {
+    opacity: 0.35;
+  }
+}
+
+/* small annotation marker like in lab books */
+.note {
+  font-family: var(--font-script);
+  font-weight: 500;
+  font-size: 18px;
+  color: var(--ink-soft);
+  line-height: 1.1;
+}
+
+/* "btn" — button styled like a stamped action */
+.btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 10px;
+  font-family: var(--font-mono);
+  font-size: 12px;
+  font-weight: 500;
+  letter-spacing: 0.04em;
+  text-transform: lowercase;
+  padding: 14px 20px;
+  border: 1px solid var(--ink);
+  background: transparent;
+  color: var(--ink);
+  transition:
+    transform 0.18s ease,
+    background 0.18s ease,
+    color 0.18s ease;
+  will-change: transform;
+}
+.btn:hover {
+  background: var(--ink);
+  color: var(--bg);
+  transform: translateY(-1px);
+}
+.btn--primary {
+  background: var(--ink);
+  color: var(--bg);
+}
+.btn--primary:hover {
+  background: var(--accent);
+  border-color: var(--accent);
+  color: var(--bg);
+}
+.btn .arrow {
+  transition: transform 0.18s ease;
+}
+.btn:hover .arrow {
+  transform: translateX(3px);
+}
+
+/* highlight (yellow marker) — only colors the lower band like real highlighter */
+.hl {
+  background: linear-gradient(
+    to top,
+    rgba(200, 154, 58, 0.45) 0,
+    rgba(200, 154, 58, 0.45) 32%,
+    transparent 32%
+  );
+  padding: 0 4px;
+  box-decoration-break: clone;
+  -webkit-box-decoration-break: clone;
+}
+.circled {
+  position: relative;
+  display: inline-block;
+}
+.circled svg {
+  position: absolute;
+  left: -10px;
+  right: -10px;
+  top: -8px;
+  bottom: -6px;
+  width: calc(100% + 20px);
+  height: calc(100% + 14px);
+  pointer-events: none;
+}
+
+/* card */
+.card {
+  background: var(--bg-card);
+  border: 1px solid var(--rule);
+  padding: 20px;
+  position: relative;
+}
+.card--soft {
+  background: transparent;
+  border: 1px dashed var(--line);
+}
+
+/* reveal-on-scroll */
+.reveal {
+  opacity: 0;
+  transform: translateY(14px);
+  transition:
+    opacity 0.6s ease,
+    transform 0.6s ease;
+  will-change: opacity, transform;
+}
+.reveal.is-visible {
+  opacity: 1;
+  transform: translateY(0);
+}
+
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.001ms !important;
+    transition-duration: 0.001ms !important;
+    scroll-behavior: auto !important;
+  }
+  .reveal {
+    opacity: 1;
+    transform: none;
+  }
+}
+
+/* focus */
+:focus-visible {
+  outline: 2px solid var(--accent);
+  outline-offset: 3px;
+}
+
+::selection {
+  background: var(--accent);
+  color: var(--bg);
+}

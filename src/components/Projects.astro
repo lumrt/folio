@@ -1,0 +1,402 @@
+---
+import { projects } from "../data/site";
+import Chart from "./decorative/Chart.astro";
+---
+
+<section id="projects" class="proj reveal">
+  <div class="container">
+    <header class="proj__head">
+      <div>
+        <span class="section-label">selected experiments</span>
+        <h2 class="proj__title">
+          Field-tested products,<br />
+          <em>shipped & measured.</em>
+        </h2>
+      </div>
+      <div class="proj__nav" aria-label="Carousel navigation">
+        <button class="navbtn" data-prev aria-label="Previous project">
+          <svg viewBox="0 0 24 24" width="14" height="14" fill="none" stroke="currentColor" stroke-width="2"><path d="M15 18l-6-6 6-6"/></svg>
+        </button>
+        <span class="proj__count">
+          <span data-current>01</span>
+          <span class="proj__sep">/</span>
+          <span>{String(projects.length).padStart(2, "0")}</span>
+        </span>
+        <button class="navbtn" data-next aria-label="Next project">
+          <svg viewBox="0 0 24 24" width="14" height="14" fill="none" stroke="currentColor" stroke-width="2"><path d="M9 18l6-6-6-6"/></svg>
+        </button>
+      </div>
+    </header>
+
+    <div class="dashed-rule" style="margin: 24px 0 28px"></div>
+
+    <div class="proj__viewport" data-viewport>
+      <ul class="proj__track" data-track>
+        {
+          projects.map((p, i) => {
+            const Tag = p.url ? "a" : "div";
+            const tagProps = p.url
+              ? {
+                  href: p.url,
+                  target: "_blank",
+                  rel: "noopener noreferrer",
+                  "aria-label": `Open ${p.title} project`,
+                }
+              : {};
+            return (
+              <li class="card-proj-wrap" data-card>
+                <Tag class={`card-proj${p.url ? " card-proj--link" : ""}`} {...tagProps}>
+                  <header class="card-proj__head">
+                    <span class="card-proj__code">{p.code}</span>
+                    <span class="card-proj__year">{p.year}</span>
+                  </header>
+
+                  <h3 class="card-proj__title">{p.title}</h3>
+                  <p class="card-proj__blurb">{p.blurb}</p>
+
+                  <div class="card-proj__chart" aria-hidden="true">
+                    <Chart type={p.chart} trend={p.metric.trend} />
+                  </div>
+
+                  <footer class="card-proj__foot">
+                    <div class={`metric metric--${p.metric.trend}`}>
+                      <span class="metric__v">{p.metric.value}</span>
+                      <span class="metric__l">{p.metric.label}</span>
+                    </div>
+                    <ul class="card-proj__tags">
+                      {p.tags.map((t) => (
+                        <li>{t}</li>
+                      ))}
+                    </ul>
+                  </footer>
+
+                  {p.url && (
+                    <span class="card-proj__visit" aria-hidden="true">
+                      visit <span class="arrow">↗</span>
+                    </span>
+                  )}
+
+                  <span class="card-proj__index">
+                    {String(i + 1).padStart(2, "0")}
+                  </span>
+                </Tag>
+              </li>
+            );
+          })
+        }
+      </ul>
+    </div>
+
+    <div class="proj__progress" aria-hidden="true">
+      <div class="proj__progress-bar" data-progress></div>
+    </div>
+  </div>
+</section>
+
+<script>
+  const viewport = document.querySelector<HTMLDivElement>("[data-viewport]");
+  const track = document.querySelector<HTMLUListElement>("[data-track]");
+  const cards = track?.querySelectorAll<HTMLLIElement>("[data-card]");
+  const prev = document.querySelector<HTMLButtonElement>("[data-prev]");
+  const next = document.querySelector<HTMLButtonElement>("[data-next]");
+  const current = document.querySelector<HTMLSpanElement>("[data-current]");
+  const progress = document.querySelector<HTMLDivElement>("[data-progress]");
+
+  if (viewport && track && cards && cards.length) {
+    const total = cards.length;
+
+    const update = () => {
+      const cardWidth = cards[0]!.getBoundingClientRect().width;
+      const gap = parseFloat(getComputedStyle(track).columnGap || "16");
+      const step = cardWidth + gap;
+      const idx = Math.round(viewport.scrollLeft / step);
+      const clamped = Math.min(total - 1, Math.max(0, idx));
+      if (current) current.textContent = String(clamped + 1).padStart(2, "0");
+      if (progress)
+        progress.style.transform = `scaleX(${(clamped + 1) / total})`;
+    };
+
+    const goTo = (idx: number) => {
+      const cardWidth = cards[0]!.getBoundingClientRect().width;
+      const gap = parseFloat(getComputedStyle(track).columnGap || "16");
+      const step = cardWidth + gap;
+      const clamped = Math.min(total - 1, Math.max(0, idx));
+      viewport.scrollTo({ left: clamped * step, behavior: "smooth" });
+    };
+
+    const getIdx = () => {
+      const cardWidth = cards[0]!.getBoundingClientRect().width;
+      const gap = parseFloat(getComputedStyle(track).columnGap || "16");
+      const step = cardWidth + gap;
+      return Math.round(viewport.scrollLeft / step);
+    };
+
+    prev?.addEventListener("click", () => goTo(getIdx() - 1));
+    next?.addEventListener("click", () => goTo(getIdx() + 1));
+
+    let raf = 0;
+    viewport.addEventListener(
+      "scroll",
+      () => {
+        cancelAnimationFrame(raf);
+        raf = requestAnimationFrame(update);
+      },
+      { passive: true }
+    );
+
+    window.addEventListener("resize", update);
+    update();
+
+    // keyboard
+    viewport.addEventListener("keydown", (e) => {
+      if (e.key === "ArrowLeft") goTo(getIdx() - 1);
+      if (e.key === "ArrowRight") goTo(getIdx() + 1);
+    });
+  }
+</script>
+
+<style>
+  .proj {
+    padding: clamp(48px, 8vw, 96px) 0 clamp(40px, 6vw, 64px);
+  }
+  .proj__head {
+    display: flex;
+    justify-content: space-between;
+    align-items: end;
+    gap: 24px;
+    flex-wrap: wrap;
+  }
+  .proj__title {
+    font-family: var(--font-serif);
+    font-weight: 500;
+    line-height: 1;
+    font-size: clamp(36px, 5.5vw, 64px);
+    margin-top: 8px;
+    letter-spacing: -0.015em;
+  }
+  .proj__title em {
+    font-style: italic;
+    color: var(--ink-soft);
+  }
+
+  .proj__nav {
+    display: inline-flex;
+    align-items: center;
+    gap: 12px;
+    font-family: var(--font-mono);
+    font-size: 12px;
+  }
+  .navbtn {
+    width: 36px;
+    height: 36px;
+    border: 1px solid var(--ink);
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    transition:
+      background 0.18s,
+      color 0.18s,
+      transform 0.18s;
+  }
+  .navbtn:hover {
+    background: var(--ink);
+    color: var(--bg);
+  }
+  .navbtn:active {
+    transform: scale(0.95);
+  }
+  .proj__count {
+    color: var(--ink-soft);
+    min-width: 56px;
+    text-align: center;
+  }
+  .proj__sep {
+    color: var(--ink-mute);
+    margin: 0 4px;
+  }
+
+  .proj__viewport {
+    overflow-x: auto;
+    scroll-snap-type: x mandatory;
+    -webkit-overflow-scrolling: touch;
+    scrollbar-width: none;
+    overscroll-behavior-x: contain;
+  }
+  .proj__viewport::-webkit-scrollbar {
+    display: none;
+  }
+
+  .proj__track {
+    list-style: none;
+    padding: 0;
+    margin: 0;
+    display: grid;
+    grid-auto-flow: column;
+    grid-auto-columns: 100%;
+    column-gap: 16px;
+  }
+  @media (min-width: 720px) {
+    .proj__track {
+      grid-auto-columns: calc((100% - 16px) / 2);
+    }
+  }
+  @media (min-width: 1080px) {
+    .proj__track {
+      grid-auto-columns: calc((100% - 48px) / 4);
+      column-gap: 16px;
+    }
+  }
+
+  .card-proj-wrap {
+    scroll-snap-align: start;
+    list-style: none;
+  }
+  .card-proj {
+    border: 1px solid var(--rule);
+    background: var(--bg-card);
+    padding: 22px;
+    display: flex;
+    flex-direction: column;
+    min-height: 380px;
+    height: 100%;
+    position: relative;
+    transition:
+      transform 0.25s ease,
+      box-shadow 0.25s ease;
+    will-change: transform;
+    color: inherit;
+    text-decoration: none;
+  }
+  .card-proj:hover {
+    transform: translateY(-3px);
+    box-shadow: 6px 6px 0 -2px rgba(184, 57, 44, 0.18);
+  }
+  .card-proj--link {
+    cursor: pointer;
+  }
+  .card-proj__visit {
+    position: absolute;
+    top: 18px;
+    right: 18px;
+    font-family: var(--font-mono);
+    font-size: 10px;
+    text-transform: uppercase;
+    letter-spacing: 0.14em;
+    color: var(--accent);
+    opacity: 0;
+    transform: translate(-4px, 0);
+    transition:
+      opacity 0.2s ease,
+      transform 0.2s ease;
+    pointer-events: none;
+  }
+  .card-proj--link:hover .card-proj__visit {
+    opacity: 1;
+    transform: translate(0, 0);
+  }
+  .card-proj--link:hover .card-proj__head .card-proj__code {
+    opacity: 0;
+  }
+  .card-proj__head .card-proj__code {
+    transition: opacity 0.18s ease;
+  }
+  .card-proj__index {
+    position: absolute;
+    bottom: 12px;
+    right: 14px;
+    font-family: var(--font-mono);
+    font-size: 10px;
+    color: var(--ink-mute);
+    letter-spacing: 0.1em;
+  }
+  .card-proj__head {
+    display: flex;
+    justify-content: space-between;
+    font-family: var(--font-mono);
+    font-size: 10px;
+    text-transform: uppercase;
+    letter-spacing: 0.12em;
+    color: var(--ink-mute);
+  }
+  .card-proj__title {
+    margin-top: 12px;
+    font-family: var(--font-serif);
+    font-weight: 600;
+    font-size: 28px;
+    line-height: 1.05;
+    letter-spacing: -0.01em;
+  }
+  .card-proj__blurb {
+    margin-top: 8px;
+    font-size: 12px;
+    color: var(--ink-soft);
+    line-height: 1.55;
+    flex: 0 0 auto;
+  }
+  .card-proj__chart {
+    margin-top: 18px;
+    height: 92px;
+    border-bottom: 1px solid var(--line);
+    padding-bottom: 6px;
+  }
+  .card-proj__foot {
+    margin-top: 14px;
+    display: flex;
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 12px;
+  }
+  .metric__v {
+    font-family: var(--font-serif);
+    font-weight: 600;
+    font-size: clamp(20px, 2.4vw, 28px);
+    line-height: 1.05;
+    display: block;
+    letter-spacing: -0.01em;
+  }
+  .metric--up .metric__v {
+    color: var(--highlight);
+  }
+  .metric--down .metric__v {
+    color: var(--accent);
+  }
+  .metric__l {
+    font-family: var(--font-mono);
+    font-size: 10px;
+    text-transform: uppercase;
+    letter-spacing: 0.14em;
+    color: var(--ink-mute);
+  }
+  .card-proj__tags {
+    list-style: none;
+    padding: 0;
+    margin: 0;
+    display: flex;
+    flex-wrap: wrap;
+    gap: 6px;
+    justify-content: flex-start;
+  }
+  .card-proj__tags li {
+    font-family: var(--font-mono);
+    font-size: 9px;
+    text-transform: uppercase;
+    letter-spacing: 0.12em;
+    color: var(--ink-soft);
+    padding: 4px 8px;
+    border: 1px dashed var(--line);
+  }
+
+  .proj__progress {
+    margin-top: 18px;
+    height: 1px;
+    background: var(--line);
+    overflow: hidden;
+  }
+  .proj__progress-bar {
+    height: 100%;
+    background: var(--accent);
+    transform-origin: left;
+    transform: scaleX(0.25);
+    transition: transform 0.35s ease;
+  }
+</style>
