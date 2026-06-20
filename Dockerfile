@@ -15,13 +15,18 @@ RUN pnpm build
 # ---- 2. Serve with nginx ----
 FROM nginx:alpine
 
+# gettext provides envsubst (already in nginx:alpine, but explicit for safety)
+RUN apk add --no-cache gettext
+
 COPY --from=build /app/dist /usr/share/nginx/html
 
-# Drop the default conf and use a templated one so $PORT (Railway) is honored
+# Drop the default conf and use our own
 RUN rm -f /etc/nginx/conf.d/default.conf
 COPY nginx.conf.template /etc/nginx/templates/default.conf.template
+COPY docker-entrypoint.sh /docker-entrypoint-folio.sh
+RUN chmod +x /docker-entrypoint-folio.sh
 
 ENV PORT=8080
 EXPOSE 8080
 
-CMD ["nginx", "-g", "daemon off;"]
+CMD ["/docker-entrypoint-folio.sh"]
