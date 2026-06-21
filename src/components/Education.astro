@@ -16,18 +16,26 @@ import { education } from "../data/site";
     <ul class="edu__list">
       {
         education.map((e, i) => {
-          const Tag = e.url ? "a" : "div";
-          const tagProps = e.url
+          const interactive = !!(e.image || e.url);
+          const Tag = e.image ? "button" : e.url ? "a" : "div";
+          const tagProps = e.image
             ? {
-                href: e.url,
-                target: "_blank",
-                rel: "noopener noreferrer",
-                "aria-label": `Open ${e.title}`,
+                type: "button" as const,
+                "data-cert-image": e.image,
+                "data-cert-title": `${e.title} — ${e.org}`,
+                "aria-label": `Open ${e.title} certificate`,
               }
-            : {};
+            : e.url
+              ? {
+                  href: e.url,
+                  target: "_blank",
+                  rel: "noopener noreferrer",
+                  "aria-label": `Open ${e.title}`,
+                }
+              : {};
           return (
             <li class="edu-item">
-              <Tag class={`edu-card${e.url ? " edu-card--link" : ""}`} {...tagProps}>
+              <Tag class={`edu-card${interactive ? " edu-card--link" : ""}`} {...tagProps}>
                 <header class="edu-card__head">
                   <span class={`edu-card__kind edu-card__kind--${e.kind}`}>
                     {e.kind === "school" ? "school" : "certification"}
@@ -44,10 +52,14 @@ import { education } from "../data/site";
 
                 <p class="edu-card__blurb">{e.blurb}</p>
 
-                {e.url && (
+                {interactive && (
                   <span class="edu-card__visit" aria-hidden="true">
-                    {e.kind === "school" ? "school site" : "verify"}{" "}
-                    <span class="arrow">↗</span>
+                    {e.image
+                      ? "view certificate"
+                      : e.kind === "school"
+                        ? "school site"
+                        : "verify"}{" "}
+                    <span class="arrow">{e.image ? "→" : "↗"}</span>
                   </span>
                 )}
 
@@ -61,7 +73,64 @@ import { education } from "../data/site";
       }
     </ul>
   </div>
+
+  <!-- Certificate modal — hidden by default, opened by [data-cert-image] buttons -->
+  <div class="cert-modal" data-cert-modal hidden aria-hidden="true" role="dialog" aria-modal="true" aria-labelledby="cert-modal-title">
+    <button class="cert-modal__backdrop" data-cert-close aria-label="Close certificate"></button>
+    <figure class="cert-modal__inner">
+      <header class="cert-modal__head">
+        <span class="cert-modal__label" id="cert-modal-title">certificate</span>
+        <button class="cert-modal__close" data-cert-close aria-label="Close">×</button>
+      </header>
+      <img class="cert-modal__img" data-cert-img alt="" />
+      <figcaption class="cert-modal__cap" data-cert-cap></figcaption>
+    </figure>
+  </div>
 </section>
+
+<script>
+  const modal = document.querySelector<HTMLDivElement>("[data-cert-modal]");
+  const modalImg = modal?.querySelector<HTMLImageElement>("[data-cert-img]");
+  const modalCap = modal?.querySelector<HTMLElement>("[data-cert-cap]");
+  const modalTitle = modal?.querySelector<HTMLElement>("#cert-modal-title");
+  const triggers = document.querySelectorAll<HTMLButtonElement>("[data-cert-image]");
+  const closers = modal?.querySelectorAll<HTMLElement>("[data-cert-close]");
+
+  let lastTrigger: HTMLElement | null = null;
+
+  const open = (trigger: HTMLButtonElement) => {
+    if (!modal || !modalImg || !modalCap || !modalTitle) return;
+    const src = trigger.dataset.certImage!;
+    const title = trigger.dataset.certTitle ?? "certificate";
+    modalImg.src = src;
+    modalImg.alt = title;
+    modalCap.textContent = title;
+    modalTitle.textContent = title;
+    lastTrigger = trigger;
+    modal.hidden = false;
+    requestAnimationFrame(() => modal.classList.add("is-open"));
+    modal.setAttribute("aria-hidden", "false");
+    document.body.style.overflow = "hidden";
+  };
+
+  const close = () => {
+    if (!modal) return;
+    modal.classList.remove("is-open");
+    modal.setAttribute("aria-hidden", "true");
+    document.body.style.overflow = "";
+    // Wait for the CSS transition before fully hiding so we can re-open later
+    setTimeout(() => {
+      modal.hidden = true;
+    }, 200);
+    lastTrigger?.focus();
+  };
+
+  triggers.forEach((t) => t.addEventListener("click", () => open(t)));
+  closers?.forEach((c) => c.addEventListener("click", close));
+  document.addEventListener("keydown", (e) => {
+    if (e.key === "Escape" && modal && !modal.hidden) close();
+  });
+</script>
 
 <style>
   .edu {
@@ -115,6 +184,11 @@ import { education } from "../data/site";
     transition:
       transform 0.25s ease,
       box-shadow 0.25s ease;
+    /* normalize <button> rendering so cert cards match school cards */
+    font: inherit;
+    text-align: left;
+    width: 100%;
+    cursor: default;
   }
   .edu-card--link {
     cursor: pointer;
@@ -208,5 +282,99 @@ import { education } from "../data/site";
     font-size: 10px;
     color: var(--ink-mute);
     letter-spacing: 0.1em;
+  }
+
+  /* === Certificate modal === */
+  .cert-modal {
+    position: fixed;
+    inset: 0;
+    z-index: 60;
+    display: grid;
+    place-items: center;
+    padding: clamp(16px, 4vw, 48px);
+    opacity: 0;
+    transition: opacity 0.18s ease;
+  }
+  .cert-modal.is-open {
+    opacity: 1;
+  }
+  .cert-modal[hidden] {
+    display: none;
+  }
+  .cert-modal__backdrop {
+    position: absolute;
+    inset: 0;
+    background: rgba(20, 20, 18, 0.72);
+    border: 0;
+    padding: 0;
+    margin: 0;
+    cursor: zoom-out;
+  }
+  .cert-modal__inner {
+    position: relative;
+    margin: 0;
+    max-width: min(960px, 100%);
+    background: var(--bg);
+    border: 1px solid var(--ink);
+    box-shadow:
+      0 10px 0 -4px rgba(184, 57, 44, 0.4),
+      0 30px 80px -20px rgba(0, 0, 0, 0.5);
+    transform: translateY(8px) scale(0.98);
+    transition:
+      transform 0.22s ease,
+      opacity 0.18s ease;
+  }
+  .cert-modal.is-open .cert-modal__inner {
+    transform: translateY(0) scale(1);
+  }
+  .cert-modal__head {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 12px;
+    padding: 12px 16px;
+    border-bottom: 1px dashed var(--rule);
+  }
+  .cert-modal__label {
+    font-family: var(--font-mono);
+    font-size: 10px;
+    text-transform: uppercase;
+    letter-spacing: 0.16em;
+    color: var(--ink-mute);
+  }
+  .cert-modal__close {
+    border: 0;
+    background: transparent;
+    color: var(--ink);
+    font-size: 24px;
+    line-height: 1;
+    cursor: pointer;
+    padding: 4px 8px;
+    transition: color 0.15s ease;
+  }
+  .cert-modal__close:hover {
+    color: var(--accent);
+  }
+  .cert-modal__img {
+    display: block;
+    width: 100%;
+    height: auto;
+    max-height: 78vh;
+    object-fit: contain;
+    background: var(--bg-soft);
+  }
+  .cert-modal__cap {
+    padding: 10px 16px 14px;
+    font-family: var(--font-mono);
+    font-size: 11px;
+    color: var(--ink-mute);
+    letter-spacing: 0.04em;
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    .cert-modal,
+    .cert-modal__inner {
+      transition: none;
+    }
   }
 </style>

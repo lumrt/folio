@@ -3,6 +3,7 @@ export const site = {
   handle: "0xLuZ",
   domain: "folio.dev",
   email: "lucas.maret11@gmail.com",
+  telegram: { handle: "@LuZz75", url: "https://t.me/LuZz75" },
   location: "Paris, France · Remote",
   socials: {
     github: { label: "github.com/lumrt", url: "https://github.com/lumrt" },
@@ -66,7 +67,7 @@ export const projects: Project[] = [
     tags: ["TypeScript", "Solana", "Discord"],
     chart: "network",
     year: "2026",
-    url: "https://github.com/lumrt/discord-solana",
+    url: "https://nod-webapp-production.up.railway.app",
   },
   {
     code: "P-03",
@@ -125,16 +126,11 @@ export const stackGroups: StackGroup[] = [
 ];
 
 export const tools = [
-  "TypeScript",
-  "Python",
-  "Go",
-  "Solana",
-  "XRPL",
-  "PostgreSQL",
-  "Docker",
-  "Kubernetes",
-  "Vercel",
-  "GitHub",
+  "lazygit",
+  "cursor",
+  "superset",
+  "PrismaORM",
+  "UNIX sys",
 ];
 
 export const services = [
@@ -150,8 +146,9 @@ export const services = [
   },
   {
     code: "03",
-    title: "MVP Sprint",
-    blurb: "Validated prototype shipped in 2–4 weeks. Build → measure → iterate.",
+    title: "MCP tooling for AI agents",
+    blurb:
+      "Custom Model Context Protocol servers — give your AI agents real superpowers, scoped, typed & auditable.",
   },
   {
     code: "04",
@@ -198,6 +195,8 @@ export type EducationItem = {
   period: string;
   blurb: string;
   url?: string;
+  /** When set, clicking the card opens a modal with this image (overrides `url`). */
+  image?: string;
 };
 
 export const education: EducationItem[] = [
@@ -216,9 +215,9 @@ export const education: EducationItem[] = [
     kind: "cert",
     title: "Go (Basic)",
     org: "HackerRank",
-    period: "2025",
+    period: "2024",
     blurb:
       "Verified certification — Go fundamentals, idiomatic patterns, concurrency primitives.",
-    url: "https://www.hackerrank.com/",
+    image: "/certs/hackerrank-go.jpg",
   },
 ];

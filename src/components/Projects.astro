@@ -70,12 +70,6 @@ import Chart from "./decorative/Chart.astro";
                     </ul>
                   </footer>
 
-                  {p.url && (
-                    <span class="card-proj__visit" aria-hidden="true">
-                      visit <span class="arrow">↗</span>
-                    </span>
-                  )}
-
                   <span class="card-proj__index">
                     {String(i + 1).padStart(2, "0")}
                   </span>
@@ -273,32 +267,6 @@ import Chart from "./decorative/Chart.astro";
   }
   .card-proj--link {
     cursor: pointer;
-  }
-  .card-proj__visit {
-    position: absolute;
-    top: 18px;
-    right: 18px;
-    font-family: var(--font-mono);
-    font-size: 10px;
-    text-transform: uppercase;
-    letter-spacing: 0.14em;
-    color: var(--accent);
-    opacity: 0;
-    transform: translate(-4px, 0);
-    transition:
-      opacity 0.2s ease,
-      transform 0.2s ease;
-    pointer-events: none;
-  }
-  .card-proj--link:hover .card-proj__visit {
-    opacity: 1;
-    transform: translate(0, 0);
-  }
-  .card-proj--link:hover .card-proj__head .card-proj__code {
-    opacity: 0;
-  }
-  .card-proj__head .card-proj__code {
-    transition: opacity 0.18s ease;
   }
   .card-proj__index {
     position: absolute;
