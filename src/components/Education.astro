@@ -90,6 +90,13 @@ import { education } from "../data/site";
 
 <script>
   const modal = document.querySelector<HTMLDivElement>("[data-cert-modal]");
+  // The parent <section class="reveal"> has a `transform`, which creates a new
+  // containing block for `position: fixed` children — that would offset the
+  // modal. Re-parent to <body> so the modal is centered against the viewport.
+  if (modal && modal.parentElement !== document.body) {
+    document.body.appendChild(modal);
+  }
+
   const modalImg = modal?.querySelector<HTMLImageElement>("[data-cert-img]");
   const modalCap = modal?.querySelector<HTMLElement>("[data-cert-cap]");
   const modalTitle = modal?.querySelector<HTMLElement>("#cert-modal-title");
@@ -110,7 +117,10 @@ import { education } from "../data/site";
     modal.hidden = false;
     requestAnimationFrame(() => modal.classList.add("is-open"));
     modal.setAttribute("aria-hidden", "false");
+    // Lock body scroll without causing a layout shift from the scrollbar
+    const scrollbar = window.innerWidth - document.documentElement.clientWidth;
     document.body.style.overflow = "hidden";
+    if (scrollbar > 0) document.body.style.paddingRight = `${scrollbar}px`;
   };
 
   const close = () => {
@@ -118,10 +128,11 @@ import { education } from "../data/site";
     modal.classList.remove("is-open");
     modal.setAttribute("aria-hidden", "true");
     document.body.style.overflow = "";
+    document.body.style.paddingRight = "";
     // Wait for the CSS transition before fully hiding so we can re-open later
     setTimeout(() => {
       modal.hidden = true;
-    }, 200);
+    }, 220);
     lastTrigger?.focus();
   };
 
@@ -285,15 +296,22 @@ import { education } from "../data/site";
   }
 
   /* === Certificate modal === */
+  /* Rendered as a child of <body> at runtime (the parent .reveal has a
+     transform which would otherwise break position: fixed). */
   .cert-modal {
     position: fixed;
     inset: 0;
-    z-index: 60;
-    display: grid;
-    place-items: center;
+    z-index: 100;
+    display: flex;
+    align-items: center;
+    justify-content: center;
     padding: clamp(16px, 4vw, 48px);
     opacity: 0;
-    transition: opacity 0.18s ease;
+    transition: opacity 0.2s ease;
+    /* Frosted-glass effect across the whole viewport */
+    background: color-mix(in srgb, var(--ink) 35%, transparent);
+    -webkit-backdrop-filter: blur(14px) saturate(120%);
+    backdrop-filter: blur(14px) saturate(120%);
   }
   .cert-modal.is-open {
     opacity: 1;
@@ -301,19 +319,27 @@ import { education } from "../data/site";
   .cert-modal[hidden] {
     display: none;
   }
+  /* The backdrop button covers the whole modal area so any click outside
+     the figure closes it. It sits *below* the inner content. */
   .cert-modal__backdrop {
     position: absolute;
     inset: 0;
-    background: rgba(20, 20, 18, 0.72);
+    z-index: 0;
+    background: transparent;
     border: 0;
     padding: 0;
     margin: 0;
     cursor: zoom-out;
+    -webkit-appearance: none;
+    appearance: none;
   }
   .cert-modal__inner {
     position: relative;
+    z-index: 1;
     margin: 0;
+    width: 100%;
     max-width: min(960px, 100%);
+    max-height: calc(100dvh - 2 * clamp(16px, 4vw, 48px));
     background: var(--bg);
     border: 1px solid var(--ink);
     box-shadow:
@@ -323,6 +349,9 @@ import { education } from "../data/site";
     transition:
       transform 0.22s ease,
       opacity 0.18s ease;
+    display: flex;
+    flex-direction: column;
+    overflow: hidden;
   }
   .cert-modal.is-open .cert-modal__inner {
     transform: translateY(0) scale(1);
@@ -334,6 +363,7 @@ import { education } from "../data/site";
     gap: 12px;
     padding: 12px 16px;
     border-bottom: 1px dashed var(--rule);
+    flex: 0 0 auto;
   }
   .cert-modal__label {
     font-family: var(--font-mono);
@@ -359,7 +389,8 @@ import { education } from "../data/site";
     display: block;
     width: 100%;
     height: auto;
-    max-height: 78vh;
+    flex: 1 1 auto;
+    min-height: 0;
     object-fit: contain;
     background: var(--bg-soft);
   }
@@ -369,6 +400,15 @@ import { education } from "../data/site";
     font-size: 11px;
     color: var(--ink-mute);
     letter-spacing: 0.04em;
+    flex: 0 0 auto;
+  }
+
+  /* Browsers without backdrop-filter (older Firefox, etc) get a darker
+     fallback so the modal still reads well. */
+  @supports not ((backdrop-filter: blur(1px)) or (-webkit-backdrop-filter: blur(1px))) {
+    .cert-modal {
+      background: rgba(20, 20, 18, 0.78);
+    }
   }
 
   @media (prefers-reduced-motion: reduce) {
