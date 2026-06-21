@@ -32,35 +32,81 @@ const nav = [
 
   <div class="hd__rule"></div>
 
-  <div class="hd__menu" data-menu>
-    {
-      nav.map((item) => (
-        <a class="hd__mlink" href={item.href} data-mlink>
-          {item.label}
-        </a>
-      ))
-    }
+  <!-- Mobile menu — moved to <body> on init so backdrop-filter on .hd
+       doesn't confine its `position: fixed` to the header. -->
+  <div class="hd__menu" data-menu hidden aria-hidden="true" role="dialog" aria-modal="true" aria-label="Site navigation">
+    <nav class="hd__menu-nav" aria-label="Primary">
+      {
+        nav.map((item, i) => (
+          <a
+            class="hd__mlink"
+            href={item.href}
+            data-mlink
+            style={`--i:${i}`}
+          >
+            <span class="hd__mlink-num">{String(i + 1).padStart(2, "0")}</span>
+            <span class="hd__mlink-label">{item.label}</span>
+            <span class="hd__mlink-arrow" aria-hidden="true">→</span>
+          </a>
+        ))
+      }
+    </nav>
+
+    <footer class="hd__menu-foot">
+      <span class="hd__menu-handle">/{site.handle}</span>
+      <span class="hd__menu-status">
+        <i class="hd__menu-dot" aria-hidden="true"></i>available
+      </span>
+    </footer>
   </div>
 </header>
 
 <script>
   const burger = document.querySelector<HTMLButtonElement>("[data-burger]");
   const menu = document.querySelector<HTMLDivElement>("[data-menu]");
-  const links = document.querySelectorAll<HTMLAnchorElement>("[data-mlink]");
 
-  burger?.addEventListener("click", () => {
-    const open = menu?.classList.toggle("is-open");
+  // Re-parent the menu to <body> so position: fixed is anchored to the
+  // viewport, not the <header> (which has backdrop-filter and would
+  // otherwise become the containing block).
+  if (menu && menu.parentElement !== document.body) {
+    document.body.appendChild(menu);
+  }
+
+  const links = menu?.querySelectorAll<HTMLAnchorElement>("[data-mlink]");
+
+  const setOpen = (open: boolean) => {
+    if (!menu || !burger) return;
+    menu.classList.toggle("is-open", open);
     burger.classList.toggle("is-open", open);
     burger.setAttribute("aria-label", open ? "Close menu" : "Open menu");
-    document.body.style.overflow = open ? "hidden" : "";
-  });
-  links.forEach((l) =>
-    l.addEventListener("click", () => {
-      menu?.classList.remove("is-open");
-      burger?.classList.remove("is-open");
+    burger.setAttribute("aria-expanded", String(open));
+    menu.setAttribute("aria-hidden", String(!open));
+    if (open) {
+      menu.hidden = false;
+      const scrollbar =
+        window.innerWidth - document.documentElement.clientWidth;
+      document.body.style.overflow = "hidden";
+      if (scrollbar > 0) document.body.style.paddingRight = `${scrollbar}px`;
+    } else {
       document.body.style.overflow = "";
-    })
+      document.body.style.paddingRight = "";
+      // Wait for the transition before fully hiding so the menu can
+      // re-animate out the next time it opens.
+      window.setTimeout(() => {
+        if (!menu.classList.contains("is-open")) menu.hidden = true;
+      }, 260);
+    }
+  };
+
+  burger?.addEventListener("click", () =>
+    setOpen(!menu?.classList.contains("is-open"))
   );
+  links?.forEach((l) => l.addEventListener("click", () => setOpen(false)));
+  document.addEventListener("keydown", (e) => {
+    if (e.key === "Escape" && menu?.classList.contains("is-open")) {
+      setOpen(false);
+    }
+  });
 </script>
 
 <style>
@@ -174,38 +220,151 @@ const nav = [
     transform: translateY(-6.5px) rotate(-45deg);
   }
 
+  /* === Mobile menu — frosted-glass full-screen overlay === */
   .hd__menu {
     position: fixed;
-    inset: 60px 0 0 0;
-    background: var(--bg);
-    padding: 32px var(--gutter);
+    inset: 0;
+    z-index: 60;
+    padding: calc(60px + clamp(16px, 4vw, 32px)) var(--gutter)
+      clamp(20px, 4vw, 32px);
     display: flex;
     flex-direction: column;
-    gap: 20px;
-    transform: translateY(-12px);
+    gap: clamp(20px, 5vh, 36px);
     opacity: 0;
     pointer-events: none;
-    transition:
-      opacity 0.2s ease,
-      transform 0.25s ease;
-    border-top: 1px solid var(--rule);
+    transition: opacity 0.25s ease;
+
+    /* Frosted glass effect — let the page bleed through, slightly tinted */
+    background: color-mix(in srgb, var(--bg) 72%, transparent);
+    -webkit-backdrop-filter: blur(20px) saturate(120%);
+    backdrop-filter: blur(20px) saturate(120%);
   }
   .hd__menu.is-open {
     opacity: 1;
-    transform: translateY(0);
     pointer-events: auto;
   }
-  .hd__mlink {
-    font-family: var(--font-serif);
-    font-size: 36px;
-    line-height: 1;
-    color: var(--ink);
+  .hd__menu[hidden] {
+    display: none;
   }
-  .hd__mlink--accent {
+  /* Fallback for browsers without backdrop-filter — opaque background */
+  @supports not (
+    (backdrop-filter: blur(1px)) or (-webkit-backdrop-filter: blur(1px))
+  ) {
+    .hd__menu {
+      background: var(--bg);
+    }
+  }
+
+  .hd__menu-nav {
+    display: flex;
+    flex-direction: column;
+    flex: 1;
+    justify-content: center;
+    gap: 4px;
+  }
+
+  /* Each link is a 3-column row: index · label · arrow */
+  .hd__mlink {
+    display: grid;
+    grid-template-columns: 28px 1fr auto;
+    align-items: baseline;
+    gap: 16px;
+    padding: 14px 2px;
+    border-bottom: 1px dashed var(--rule);
+    color: var(--ink);
+    text-decoration: none;
+    /* Stagger entrance — driven by inline --i */
+    opacity: 0;
+    transform: translateY(8px);
+    transition:
+      opacity 0.35s ease,
+      transform 0.35s ease,
+      color 0.18s ease,
+      background 0.18s ease;
+  }
+  .hd__menu.is-open .hd__mlink {
+    opacity: 1;
+    transform: translateY(0);
+    transition-delay: calc(var(--i, 0) * 60ms + 80ms);
+  }
+  .hd__mlink:active,
+  .hd__mlink:hover {
+    color: var(--accent);
+  }
+  .hd__mlink-num {
+    font-family: var(--font-mono);
+    font-size: 10px;
+    text-transform: uppercase;
+    letter-spacing: 0.16em;
+    color: var(--accent);
+    align-self: center;
+  }
+  .hd__mlink-label {
+    font-family: var(--font-serif);
+    font-weight: 500;
+    font-size: clamp(34px, 9vw, 52px);
+    line-height: 1;
+    letter-spacing: -0.015em;
+  }
+  .hd__mlink-arrow {
     font-family: var(--font-mono);
     font-size: 14px;
+    color: var(--ink-mute);
+    align-self: center;
+    transform: translateX(-4px);
+    opacity: 0.6;
+    transition:
+      transform 0.18s ease,
+      color 0.18s ease,
+      opacity 0.18s ease;
+  }
+  .hd__mlink:hover .hd__mlink-arrow,
+  .hd__mlink:active .hd__mlink-arrow {
+    transform: translateX(0);
     color: var(--accent);
-    margin-top: auto;
+    opacity: 1;
+  }
+
+  .hd__menu-foot {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding-top: clamp(12px, 3vw, 18px);
+    border-top: 1px solid var(--rule);
+    font-family: var(--font-mono);
+    font-size: 10px;
+    text-transform: uppercase;
+    letter-spacing: 0.14em;
+    color: var(--ink-mute);
+  }
+  .hd__menu-handle {
+    color: var(--ink);
+    font-weight: 600;
+  }
+  .hd__menu-status {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    color: var(--highlight);
+  }
+  .hd__menu-dot {
+    width: 6px;
+    height: 6px;
+    border-radius: 999px;
+    background: var(--highlight);
+    box-shadow: 0 0 0 3px color-mix(in srgb, var(--highlight) 30%, transparent);
+    animation: pulse 2s ease-in-out infinite;
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    .hd__menu,
+    .hd__mlink,
+    .hd__mlink-arrow {
+      transition: none;
+    }
+    .hd__menu.is-open .hd__mlink {
+      transition-delay: 0ms;
+    }
   }
 
   @media (min-width: 760px) {

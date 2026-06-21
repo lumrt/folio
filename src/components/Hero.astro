@@ -244,11 +244,19 @@ import Orbit from "./decorative/Orbit.astro";
     flex-direction: column;
     gap: 16px;
   }
+  /* Hide the orbital diagram on small screens — keeps the meta strip
+     (Loc / Status) but drops the dense visual on phones. */
   .viz__frame {
+    display: none;
     border: 1px solid var(--rule);
     background: var(--bg-card);
     padding: 12px;
     position: relative;
+  }
+  @media (min-width: 720px) {
+    .viz__frame {
+      display: block;
+    }
   }
   .viz__head {
     display: flex;

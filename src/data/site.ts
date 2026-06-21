@@ -13,8 +13,8 @@ export const site = {
     },
     x: { label: "@0xLuZz", url: "https://x.com/0xLuZz" },
     calendar: {
-      label: "30 min · google cal",
-      url: "https://cal.com/",
+      label: "30 min · cal.com",
+      url: "https://cal.com/lucas-maret-kxetw1/30min",
     },
   },
   /** rotating quote, kept short and punchy */
@@ -205,7 +205,7 @@ export const education: EducationItem[] = [
     kind: "school",
     title: "École 42 Paris",
     org: "Computer Science",
-    period: "2022 — current",
+    period: "2023 — 2026",
     blurb:
       "Peer-learning, project-based engineering school. C, networking, systems, web & graphics from the ground up.",
     url: "https://42.fr/",
