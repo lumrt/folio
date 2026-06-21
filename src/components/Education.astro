@@ -83,7 +83,6 @@ import { education } from "../data/site";
         <button class="cert-modal__close" data-cert-close aria-label="Close">×</button>
       </header>
       <img class="cert-modal__img" data-cert-img alt="" />
-      <figcaption class="cert-modal__cap" data-cert-cap></figcaption>
     </figure>
   </div>
 </section>
@@ -98,7 +97,6 @@ import { education } from "../data/site";
   }
 
   const modalImg = modal?.querySelector<HTMLImageElement>("[data-cert-img]");
-  const modalCap = modal?.querySelector<HTMLElement>("[data-cert-cap]");
   const modalTitle = modal?.querySelector<HTMLElement>("#cert-modal-title");
   const triggers = document.querySelectorAll<HTMLButtonElement>("[data-cert-image]");
   const closers = modal?.querySelectorAll<HTMLElement>("[data-cert-close]");
@@ -106,12 +104,11 @@ import { education } from "../data/site";
   let lastTrigger: HTMLElement | null = null;
 
   const open = (trigger: HTMLButtonElement) => {
-    if (!modal || !modalImg || !modalCap || !modalTitle) return;
+    if (!modal || !modalImg || !modalTitle) return;
     const src = trigger.dataset.certImage!;
     const title = trigger.dataset.certTitle ?? "certificate";
     modalImg.src = src;
     modalImg.alt = title;
-    modalCap.textContent = title;
     modalTitle.textContent = title;
     lastTrigger = trigger;
     modal.hidden = false;
@@ -393,14 +390,6 @@ import { education } from "../data/site";
     min-height: 0;
     object-fit: contain;
     background: var(--bg-soft);
-  }
-  .cert-modal__cap {
-    padding: 10px 16px 14px;
-    font-family: var(--font-mono);
-    font-size: 11px;
-    color: var(--ink-mute);
-    letter-spacing: 0.04em;
-    flex: 0 0 auto;
   }
 
   /* Browsers without backdrop-filter (older Firefox, etc) get a darker

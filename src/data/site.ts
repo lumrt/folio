@@ -131,6 +131,8 @@ export const tools = [
   "superset",
   "PrismaORM",
   "UNIX sys",
+  "Railway",
+  "Cloudflare",
 ];
 
 export const services = [
